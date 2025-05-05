@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { adminlogin } from "./Controllers/admin.js";
 import multer from "multer";
-import { addcarouselimages, getcarouselimages, getgalleryimages } from "./Controllers/images.js";
+import { addcarouselimages, addleftad, addrightad, getcarouselimages, getgalleryimages, getHeroImages } from "./Controllers/images.js";
 import { addDestination } from "./Controllers/destination.js";
 
 
@@ -23,6 +23,14 @@ approuter.post(
   ]),
   addDestination
 );
+
+// Image Routes
+approuter.get("/api/getheroimages",getHeroImages);
+
+approuter.post("/api/addleftad", upload.single("image"), addleftad);
+
+approuter.post("/api/addrightad", upload.single("image"), addrightad);
+
 
 
 
