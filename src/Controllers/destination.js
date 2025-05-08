@@ -109,3 +109,27 @@ export const addDestination = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+export const getDestinations = async (req, res) => {
+  try {
+    const db = mongoose.connection.db;
+
+    const destinations = await db.collection("destinations").find({}).toArray();
+
+    if (destinations.length < 0) {
+      return res.status(404).json({
+        message: "No Destinations Found",
+      });
+    }
+
+    return res.status(200).json({
+      payload: destinations,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+};

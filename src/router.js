@@ -2,7 +2,7 @@ import { Router } from "express";
 import { adminlogin } from "./Controllers/admin.js";
 import multer from "multer";
 import { addcarouselimages, addleftad, addrightad, getcarouselimages, getgalleryimages, getHeroImages } from "./Controllers/images.js";
-import { addDestination } from "./Controllers/destination.js";
+import { addDestination, getDestinations } from "./Controllers/destination.js";
 
 
 // Initialize multer for file uploads
@@ -23,6 +23,7 @@ approuter.post(
   ]),
   addDestination
 );
+approuter.get("/api/getdestinations",getDestinations);
 
 // Image Routes
 approuter.get("/api/getheroimages",getHeroImages);
