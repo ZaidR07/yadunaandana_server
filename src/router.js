@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { adminlogin } from "./Controllers/admin.js";
 import multer from "multer";
-import { addcarouselimages, addleftad, addrightad, getcarouselimages, getgalleryimages, getHeroImages } from "./Controllers/images.js";
-import { addDestination, getDestinations } from "./Controllers/destination.js";
+import { addcarouselimages, addgalleryimages, addleftad, addrightad, deletecarouselimage, deletegalleryimage, getcarouselimages, getgalleryimages, getHeroImages } from "./Controllers/images.js";
+import { addDestination, getDestinations, getSingleDestination } from "./Controllers/destination.js";
 
 
 // Initialize multer for file uploads
@@ -11,9 +11,18 @@ const upload = multer({ storage: multer.memoryStorage() }); // Store files in me
 const approuter = Router();
 
 approuter.post("/api/adminlogin",adminlogin);
-approuter.post("/api/addcarouselimages",upload.array("images") , addcarouselimages);
+
+// Carousel
+approuter.post("/api/addcarouselimages",upload.array("images"), addcarouselimages);
 approuter.get("/api/getcarouselimages",getcarouselimages);
+approuter.post("/api/deletecarousel",deletecarouselimage);
+
+
+// Gallery
 approuter.get("/api/getgalleryimages",getgalleryimages);
+approuter.post("/api/addgalleryimages",upload.array("images"), addgalleryimages);
+approuter.post("/api/deletegallery",deletegalleryimage);
+
 
 approuter.post(
   "/api/adddestination",
@@ -24,6 +33,9 @@ approuter.post(
   addDestination
 );
 approuter.get("/api/getdestinations",getDestinations);
+approuter.get("/api/getsingledestination",getSingleDestination);
+
+
 
 // Image Routes
 approuter.get("/api/getheroimages",getHeroImages);

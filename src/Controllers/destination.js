@@ -133,3 +133,41 @@ export const getDestinations = async (req, res) => {
     });
   }
 };
+
+export const getSingleDestination = async (req, res) => {
+  try {
+    const { id } = req.query;
+
+    
+    
+
+    if (!id) {
+      return res.status(400).json({
+        message: "No id is present",
+      });
+    }
+
+    const db = mongoose.connection.db;
+
+    const destinations = await db
+      .collection("destinations")
+      .find({ destination_id: parseInt(id)  })
+      .toArray();
+
+    if (destinations.length < 0) {
+      return res.status(404).json({
+        message: "No Destinations Found",
+      });
+    }
+
+    return res.status(200).json({
+      payload: destinations[0],
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+};
