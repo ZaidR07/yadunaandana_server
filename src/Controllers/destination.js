@@ -134,12 +134,36 @@ export const getDestinations = async (req, res) => {
   }
 };
 
+export const getDestinationsName = async (req, res) => {
+  try {
+    const db = mongoose.connection.db;
+
+    const destinations = await db.collection("destinations").find({}).toArray();
+
+    if (destinations.length < 0) {
+      return res.status(404).json({
+        message: "No Destinations Found",
+      });
+    }
+
+   const names = destinations.map((item) => item.tripname);
+
+
+    return res.status(200).json({
+      payload: names,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+};
+
 export const getSingleDestination = async (req, res) => {
   try {
     const { id } = req.query;
-
-    
-    
 
     if (!id) {
       return res.status(400).json({
@@ -151,7 +175,7 @@ export const getSingleDestination = async (req, res) => {
 
     const destinations = await db
       .collection("destinations")
-      .find({ destination_id: parseInt(id)  })
+      .find({ destination_id: parseInt(id) })
       .toArray();
 
     if (destinations.length < 0) {
