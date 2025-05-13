@@ -3,7 +3,7 @@ import { adminlogin } from "./Controllers/admin.js";
 import multer from "multer";
 import { addcarouselimages, addgalleryimages, addleftad, addrightad, deletecarouselimage, deletegalleryimage, getcarouselimages, getgalleryimages, getHeroImages } from "./Controllers/images.js";
 import { addDestination, getDestinations, getDestinationsName, getSingleDestination } from "./Controllers/destination.js";
-import { RegisterUser } from "./Controllers/user.js";
+import { RegisterUser, sendotp, verifyotp } from "./Controllers/user.js";
 import { sendcontactmessage } from "./Controllers/contact.js";
 import { getReviews, SubmitReview } from "./Controllers/review.js";
 
@@ -41,8 +41,6 @@ approuter.get("/api/getdestinationsname",getDestinationsName);
 
 approuter.get("/api/getsingledestination",getSingleDestination);
 
-
-
 // Image Routes
 approuter.get("/api/getheroimages",getHeroImages);
 
@@ -53,6 +51,9 @@ approuter.post("/api/addrightad", upload.single("image"), addrightad);
 
 // Login and Register Routes
 approuter.post("/api/adduser",RegisterUser);
+approuter.post("/api/sendotp",sendotp);
+approuter.post("/api/verifyotp", verifyotp);
+
 
 // Contact Page
 approuter.post("/api/sendcontactmessage",sendcontactmessage);

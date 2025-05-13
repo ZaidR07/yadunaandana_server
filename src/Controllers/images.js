@@ -342,3 +342,6 @@ export const addrightad = async (req, res) => {
     return res.status(500).json({ message: "Failed to upload image" });
   }
 };
+
+
+
