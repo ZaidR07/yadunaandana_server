@@ -30,11 +30,14 @@ approuter.post("/api/deletegallery",deletegalleryimage);
 approuter.post(
   "/api/adddestination",
   upload.fields([
+    {name : "displayphoto"},
     { name: "photos", maxCount: 10 },
-    { name: "blogs", maxCount: 10 }
+    { name: "blogs", maxCount: 10 },
+    { name: "accomodations", maxCount: 10 }
   ]),
   addDestination
 );
+
 approuter.get("/api/getdestinations",getDestinations);
 approuter.get("/api/getdestinationsname",getDestinationsName);
 

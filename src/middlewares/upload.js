@@ -1,4 +1,3 @@
-
 import multer from "multer";
 
 // Configure multer to use memory storage
@@ -16,19 +15,17 @@ const uploadMiddleware = (req, res, next) => {
   const uploadType = req.query.uploadType || req.body.uploadType;
 
   if (uploadType === "single") {
-    upload.single("photo")(req, res, next);
+    upload.single("displayphoto")(req, res, next);
   } else if (uploadType === "multiple") {
-    
-    
     upload.fields([
       { name: "photos", maxCount: 10 },
-      { name: "blogs", maxCount: 10 }
+      { name: "blogs", maxCount: 10 },
+      { name: "accomodations", maxCount: 10 },
     ])(req, res, next);
   } else {
     return res.status(400).json({ message: "Invalid upload type" });
   }
 };
-
 
 // Export the dynamic middleware
 export default uploadMiddleware;

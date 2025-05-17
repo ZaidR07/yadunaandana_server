@@ -6,12 +6,13 @@ export const addDestination = async (req, res) => {
   try {
     const data = req.body;
 
-    const photos = req.files?.photos || []; // Fallback to empty array if undefined
+    const photos = req.files?.photos || [];
     const blogs = req.files?.blogs || [];
+    const accomodations = req.files?.accomodations || [];
+    const displayphoto = req.files?.displayphoto?.[0] || null;
 
     const db = mongoose.connection.db;
 
-    // ✅ Parse amenities & highlights if received as strings
     const parseJSONField = (field) => {
       try {
         return typeof field === "string" ? JSON.parse(field) : field || [];
@@ -25,7 +26,6 @@ export const addDestination = async (req, res) => {
     data.excluded = parseJSONField(data.excluded);
     data.itinerary = parseJSONField(data.itinerary);
 
-    // ✅ Get the last property ID and increment it
     const lastDestination = await db
       .collection("destinations")
       .findOne({}, { sort: { destination_id: -1 } });
@@ -34,21 +34,17 @@ export const addDestination = async (req, res) => {
       ? lastDestination.destination_id + 1
       : 100001;
 
-    // ✅ Upload images to AWS S3
     const photoUrls = [];
-    if (photos && photos.length > 0) {
+    if (photos.length > 0) {
       await Promise.all(
         photos.map(async (file) => {
-          const fileKey = `destination/${destinationId}/${Date.now()}_${
-            file.originalname
-          }`;
+          const fileKey = `destination/${destinationId}/${Date.now()}_${file.originalname}`;
           const uploadParams = {
             Bucket: process.env.AWS_BUCKET_NAME,
             Key: fileKey,
             Body: file.buffer,
             ContentType: file.mimetype,
           };
-
           try {
             await s3Client.send(new PutObjectCommand(uploadParams));
             const photourl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileKey}`;
@@ -60,19 +56,17 @@ export const addDestination = async (req, res) => {
       );
     }
 
-    // ✅ Upload images to AWS S3
     const blogUrls = [];
-    if (blogs && blogs.length > 0) {
+    if (blogs.length > 0) {
       await Promise.all(
         blogs.map(async (file) => {
-          const fileKey = `destination/${Date.now()}_${file.originalname}`;
+          const fileKey = `destination/${destinationId}/blogs/${Date.now()}_${file.originalname}`;
           const uploadParams = {
             Bucket: process.env.AWS_BUCKET_NAME,
             Key: fileKey,
             Body: file.buffer,
             ContentType: file.mimetype,
           };
-
           try {
             await s3Client.send(new PutObjectCommand(uploadParams));
             const blogurl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileKey}`;
@@ -84,13 +78,53 @@ export const addDestination = async (req, res) => {
       );
     }
 
-    // ✅ Save property in DB
+    const accomodationUrls = [];
+    if (accomodations.length > 0) {
+      await Promise.all(
+        accomodations.map(async (file) => {
+          const fileKey = `destination/${destinationId}/accomodations/${Date.now()}_${file.originalname}`;
+          const uploadParams = {
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Key: fileKey,
+            Body: file.buffer,
+            ContentType: file.mimetype,
+          };
+          try {
+            await s3Client.send(new PutObjectCommand(uploadParams));
+            const accomodationurl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileKey}`;
+            accomodationUrls.push(accomodationurl);
+          } catch (uploadError) {
+            console.error("AWS S3 Upload Error:", uploadError);
+          }
+        })
+      );
+    }
+
+    let displayPhotoUrl = "";
+    if (displayphoto) {
+      const fileKey = `destination/${destinationId}/cover_${Date.now()}_${displayphoto.originalname}`;
+      const uploadParams = {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: fileKey,
+        Body: displayphoto.buffer,
+        ContentType: displayphoto.mimetype,
+      };
+      try {
+        await s3Client.send(new PutObjectCommand(uploadParams));
+        displayPhotoUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileKey}`;
+      } catch (uploadError) {
+        console.error("AWS S3 Upload Error (displayphoto):", uploadError);
+      }
+    }
+
     const newDestination = {
       ...data,
       destination_id: destinationId,
       active: true,
-      photos: photoUrls, // Store S3 image URLs
+      photos: photoUrls,
       blogs: blogUrls,
+      accomodations: accomodationUrls,
+      displayphoto: displayPhotoUrl || "", // ✅ Include display photo URL
     };
 
     const insertStatus = await db
@@ -98,7 +132,7 @@ export const addDestination = async (req, res) => {
       .insertOne(newDestination);
 
     if (!insertStatus.acknowledged) {
-      return res.status(500).json({ message: "Failed to Add Property" });
+      return res.status(500).json({ message: "Failed to Add Destination" });
     }
 
     return res.status(200).json({
@@ -146,8 +180,7 @@ export const getDestinationsName = async (req, res) => {
       });
     }
 
-   const names = destinations.map((item) => item.tripname);
-
+    const names = destinations.map((item) => item.tripname);
 
     return res.status(200).json({
       payload: names,
@@ -195,3 +228,11 @@ export const getSingleDestination = async (req, res) => {
     });
   }
 };
+
+export const deleteDestination = async  (req , res ) => {
+  try {
+    
+  } catch (error) {
+    
+  }
+}
