@@ -2,7 +2,7 @@ import { Router } from "express";
 import { adminlogin } from "./Controllers/admin.js";
 import multer from "multer";
 import { addcarouselimages, addgalleryimages, addleftad, addrightad, deletecarouselimage, deletegalleryimage, getcarouselimages, getgalleryimages, getHeroImages } from "./Controllers/images.js";
-import { addDestination, getDestinations, getDestinationsName, getSingleDestination } from "./Controllers/destination.js";
+import { addDestination, deleteDestination, getDestinations, getDestinationsName, getSingleDestination } from "./Controllers/destination.js";
 import { RegisterUser, sendotp, verifyotp } from "./Controllers/user.js";
 import { sendcontactmessage } from "./Controllers/contact.js";
 import { getReviews, SubmitReview } from "./Controllers/review.js";
@@ -40,6 +40,7 @@ approuter.post(
 
 approuter.get("/api/getdestinations",getDestinations);
 approuter.get("/api/getdestinationsname",getDestinationsName);
+approuter.post("/api/deletedestination",deleteDestination);
 
 
 approuter.get("/api/getsingledestination",getSingleDestination);

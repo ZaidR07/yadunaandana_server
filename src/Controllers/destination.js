@@ -26,13 +26,18 @@ export const addDestination = async (req, res) => {
     data.excluded = parseJSONField(data.excluded);
     data.itinerary = parseJSONField(data.itinerary);
 
-    const lastDestination = await db
-      .collection("destinations")
-      .findOne({}, { sort: { destination_id: -1 } });
+    let destinationId = parseInt(data.destination_id);
 
-    const destinationId = lastDestination
-      ? lastDestination.destination_id + 1
-      : 100001;
+    // If destination_id not present, assign new one
+    if (!destinationId) {
+      const lastDestination = await db
+        .collection("destinations")
+        .findOne({}, { sort: { destination_id: -1 } });
+
+      destinationId = lastDestination
+        ? lastDestination.destination_id + 1
+        : 100001;
+    }
 
     const photoUrls = [];
     if (photos.length > 0) {
@@ -117,32 +122,49 @@ export const addDestination = async (req, res) => {
       }
     }
 
-    const newDestination = {
+    // ✅ Prepare the fields to update or insert
+    const destinationData = {
       ...data,
       destination_id: destinationId,
       active: true,
-      photos: photoUrls,
-      blogs: blogUrls,
-      accomodations: accomodationUrls,
-      displayphoto: displayPhotoUrl || "", // ✅ Include display photo URL
     };
 
-    const insertStatus = await db
+    if (photoUrls.length > 0) destinationData.photos = photoUrls;
+    if (blogUrls.length > 0) destinationData.blogs = blogUrls;
+    if (accomodationUrls.length > 0) destinationData.accomodations = accomodationUrls;
+    if (displayPhotoUrl) destinationData.displayphoto = displayPhotoUrl;
+
+    // ✅ Check if it's an update or insert
+    const existing = await db
       .collection("destinations")
-      .insertOne(newDestination);
+      .findOne({ destination_id: destinationId });
 
-    if (!insertStatus.acknowledged) {
-      return res.status(500).json({ message: "Failed to Add Destination" });
+    if (existing) {
+      // Update only the fields provided
+      await db.collection("destinations").updateOne(
+        { destination_id: destinationId },
+        { $set: destinationData }
+      );
+      return res.status(200).json({ message: "Destination Updated Successfully" });
+    } else {
+      const insertStatus = await db
+        .collection("destinations")
+        .insertOne(destinationData);
+
+      if (!insertStatus.acknowledged) {
+        return res.status(500).json({ message: "Failed to Add Destination" });
+      }
+
+      return res.status(200).json({
+        message: "Destination Added Successfully",
+      });
     }
-
-    return res.status(200).json({
-      message: "Destination Added Successfully",
-    });
   } catch (error) {
     console.error("Error in addDestination:", error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 
 export const getDestinations = async (req, res) => {
   try {
@@ -229,10 +251,31 @@ export const getSingleDestination = async (req, res) => {
   }
 };
 
-export const deleteDestination = async  (req , res ) => {
+export const deleteDestination = async (req, res) => {
   try {
-    
+    const { destination_id } = req.body;
+
+    if (!destination_id) {
+      return res.status(400).json({
+        message: "Required Fields are Missing",
+        status: false,
+      });
+    }
+
+    const db = mongoose.connection.db;
+
+    await db
+      .collection("destinations")
+      .deleteOne({ destination_id: destination_id });
+
+    return res.status(200).json({
+      message: "Deletion Successful",
+      status: true,
+    });
   } catch (error) {
-    
+    return res.status(500).json({
+      message: "Internal Server Error",
+      status: false,
+    });
   }
-}
+};
