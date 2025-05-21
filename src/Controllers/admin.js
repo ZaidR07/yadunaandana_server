@@ -38,7 +38,7 @@ const verification = async (email, password) => {
 };
 
 export const adminlogin = async (req, res) => {
-    console.log("hit");
+  
     
     try {
         const data = req.body.payload;
