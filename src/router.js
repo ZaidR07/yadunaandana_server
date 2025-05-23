@@ -5,7 +5,7 @@ import { addcarouselimages, addgalleryimages, addleftad, addrightad, deletecarou
 import { addDestination, deleteDestination, getDestinations, getDestinationsName, getSingleDestination } from "./Controllers/destination.js";
 import { RegisterUser, sendotp, verifyotp } from "./Controllers/user.js";
 import { sendcontactmessage } from "./Controllers/contact.js";
-import { getReviews, SubmitReview } from "./Controllers/review.js";
+import { getDestinationReviews, getReviews, SubmitReview } from "./Controllers/review.js";
 import { RequestCallback } from "./Controllers/callrequest.js";
 
 
@@ -66,7 +66,7 @@ approuter.post("/api/sendcontactmessage",sendcontactmessage);
 //Review
 approuter.post("/api/submitreview",SubmitReview);
 approuter.get("/api/getreviews",getReviews);
-
+approuter.get("/api/getdestinationreview",getDestinationReviews);
 
 //Call Request
 approuter.post("/api/requestcallback",RequestCallback);
