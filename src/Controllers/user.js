@@ -36,7 +36,6 @@ export const RegisterUser = async (req, res) => {
     const existing = await checkExisting(email, mobile);
 
 
-
     if (existing) {
       return res.status(400).json({
         message: "User already exists with this email or mobile",
@@ -45,11 +44,16 @@ export const RegisterUser = async (req, res) => {
 
     const db = mongoose.connection.db;
 
+    data.createdAt = new Date();
+
     await db.collection("users").insertOne(data);
 
+  
     return res.status(200).json({
       message: "User Registered Successfully",
     });
+
+
   } catch (error) {
     console.error(error);
 
@@ -160,7 +164,31 @@ export const verifyotp = async (req, res) => {
   }
 };
 
+export const getUsers = async (req , res) => {
+    try {
+      const db = mongoose.connection.db;
 
+      const users = await db.collection("users").find({}).sort({ _id: -1 }).toArray();
+
+
+      if(users.length < 0){
+        return res.status(404).json({
+          message : "No users Found"
+        })
+      }
+
+      return res.status(200).json({
+        payload : users
+      })
+
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({
+        message : "Internal Server Error"
+      })
+      
+    }
+}
 
 
 

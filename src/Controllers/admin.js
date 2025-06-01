@@ -6,7 +6,7 @@ import mongoose from "mongoose";
 
 const checkExisting = async (email) => {
     try {
-        console.log(email);
+        
         
         const db = mongoose.connection.db;
         return await db.collection("admin").findOne({ email });

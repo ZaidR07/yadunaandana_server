@@ -8,7 +8,6 @@ dotenv.config();
 const DB_URL = process.env.DB || "mongodb+srv://trexuser:trexpassword@trextesting.ixnokth.mongodb.net/Yadunandana";
 
 
-
 const ConnectDB = async () => {
     try {
         const connectionInstance = await mongoose.connect(DB_URL);
