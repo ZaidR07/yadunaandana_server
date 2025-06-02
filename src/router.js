@@ -20,6 +20,7 @@ import {
   getSingleDestination,
 } from "./Controllers/destination.js";
 import {
+  getUser,
   getUsers,
   RegisterUser,
   sendotp,
@@ -88,6 +89,7 @@ approuter.post("/api/adduser", RegisterUser);
 approuter.post("/api/sendotp", sendotp);
 approuter.post("/api/verifyotp", verifyotp);
 approuter.get("/api/getusers", getUsers);
+approuter.get("/api/getuser", getUser);
 
 // Contact Page
 approuter.post("/api/sendcontactmessage", sendcontactmessage);

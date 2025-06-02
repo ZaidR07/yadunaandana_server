@@ -190,5 +190,26 @@ export const getUsers = async (req , res) => {
     }
 }
 
+export const getUser = async (req , res) => {
+    try {
+   
+      const db = mongoose.connection.db;
+
+      const users = await db.collection("users").findOne({});
+
+
+      return res.status(200).json({
+        payload : users
+      })
+
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({
+        message : "Internal Server Error"
+      })
+      
+    }
+}
+
 
 
