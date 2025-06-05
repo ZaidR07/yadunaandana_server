@@ -34,6 +34,7 @@ import {
 } from "./Controllers/review.js";
 import { RequestCallback } from "./Controllers/callrequest.js";
 import { addVisitor, getDashboardNumbers } from "./Controllers/visitors.js";
+import { addActivities, getActivities } from "./Controllers/activities.js";
 
 // Initialize multer for file uploads
 const upload = multer({ storage: multer.memoryStorage() }); // Store files in memory
@@ -102,11 +103,19 @@ approuter.get("/api/getdestinationreview", getDestinationReviews);
 //Call Request
 approuter.post("/api/requestcallback", RequestCallback);
 
-
 //visitor Routes
 approuter.post("/api/addvisitor", addVisitor);
 approuter.get("/api/getdashboardnumbers", getDashboardNumbers);
 
-
+//Activities
+approuter.post(
+  "/api/addactivity",
+  upload.fields([
+    { name: "displayphoto" },
+    { name: "photos", maxCount: 10 },
+  ]),
+  addActivities
+);
+approuter.get("/api/getactivities",getActivities);
 
 export default approuter;
